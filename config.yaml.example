@@ -1,0 +1,17 @@
+environments:
+  - distribution: jammy
+    architecture: amd64
+    mirror: http://jp.archive.ubuntu.com/ubuntu
+    components: [main, universe]
+  - distribution: noble
+    architecture: amd64
+    mirror: http://jp.archive.ubuntu.com/ubuntu
+    components: [main, universe]
+  - distribution: bookworm
+    architecture: amd64
+    mirror: http://httpredir.debian.org/debian
+    components: [main]
+  - distribution: buster
+    architecture: amd64
+    mirror: http://archive.debian.org/debian
+    components: [main]
