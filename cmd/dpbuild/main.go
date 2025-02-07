@@ -21,6 +21,11 @@ func main() {
 			fmt.Printf("Error during initialization: %v\n", err)
 			os.Exit(1)
 		}
+	case "source":
+		if err := runSource(); err != nil {
+			fmt.Printf("Error during source package creation: %v\n", err)
+			os.Exit(1)
+		}
 	case "pkg":
 		if err := runPackage(); err != nil {
 			fmt.Printf("Error during package build: %v\n", err)
@@ -46,6 +51,20 @@ func runInit() error {
 	b := builder.New(cfg)
 	if err := b.Init(); err != nil {
 		return fmt.Errorf("failed to initialize: %w", err)
+	}
+
+	return nil
+}
+
+func runSource() error {
+	cfg, err := config.Load()
+	if err != nil {
+		return fmt.Errorf("failed to load config: %w", err)
+	}
+
+	b := builder.New(cfg)
+	if err := b.Source(); err != nil {
+		return fmt.Errorf("failed to create source package: %w", err)
 	}
 
 	return nil

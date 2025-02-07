@@ -191,3 +191,54 @@ func (b *Builder) Update() error {
 
 	return nil
 }
+
+func (b *Builder) Source() error {
+	if _, err := os.Stat("debian"); err != nil {
+		return fmt.Errorf("debian directory not found in current directory")
+	}
+
+	versionCmd := exec.Command("dpkg-parsechangelog", "-S", "Version")
+	versionOut, err := versionCmd.Output()
+	if err != nil {
+		return fmt.Errorf("failed to get package version: %w", err)
+	}
+	fullVersion := strings.TrimSpace(string(versionOut))
+
+	version := strings.Split(fullVersion, "-")[0]
+
+	sourceCmd := exec.Command("dpkg-parsechangelog", "-S", "Source")
+	sourceOut, err := sourceCmd.Output()
+	if err != nil {
+		return fmt.Errorf("failed to get package source name: %w", err)
+	}
+	sourceName := strings.TrimSpace(string(sourceOut))
+
+	origFileName := fmt.Sprintf("../%s_%s.orig.tar.xz", sourceName, version)
+
+	args := []string{
+		"tar", "cJf", origFileName,
+		"--exclude", "./debian",
+		"--exclude", "./.git",
+		"--transform", fmt.Sprintf("s,^\\./,%s-%s/,", sourceName, version),
+		".",
+	}
+
+	fmt.Printf("Executing: %s\n", strings.Join(args, " "))
+	tarCmd := exec.Command(args[0], args[1:]...)
+	tarCmd.Stdout = os.Stdout
+	tarCmd.Stderr = os.Stderr
+	if err := tarCmd.Run(); err != nil {
+		return fmt.Errorf("failed to create orig.tar.xz: %w", err)
+	}
+
+	sourceArgs := []string{"dpkg-source", "-b", "."}
+	fmt.Printf("Executing: %s\n", strings.Join(sourceArgs, " "))
+	sourceCmd = exec.Command(sourceArgs[0], sourceArgs[1:]...)
+	sourceCmd.Stdout = os.Stdout
+	sourceCmd.Stderr = os.Stderr
+	if err := sourceCmd.Run(); err != nil {
+		return fmt.Errorf("failed to run dpkg-source: %w", err)
+	}
+
+	return nil
+}
