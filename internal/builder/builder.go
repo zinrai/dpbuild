@@ -55,6 +55,8 @@ func (b *Builder) Init() error {
 			"--basetgz", basePath,
 		}
 
+		fmt.Printf("Executing: sudo %s\n", strings.Join(args, " "))
+
 		cmd := exec.Command("sudo", args...)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -73,6 +75,77 @@ func (b *Builder) checkPbuilder() error {
 	_, err := exec.LookPath("/usr/sbin/pbuilder")
 	if err != nil {
 		return fmt.Errorf("pbuilder command not found: %w", err)
+	}
+	return nil
+}
+
+type PackageOptions struct {
+	Distribution string
+	Architecture string
+	DscFile      string
+}
+
+func (b *Builder) Package(opts *PackageOptions) error {
+	if err := b.validatePackageOptions(opts); err != nil {
+		return err
+	}
+
+	if err := b.checkPbuilder(); err != nil {
+		return err
+	}
+
+	if _, err := os.Stat("debian"); err != nil {
+		return fmt.Errorf("debian directory not found in current directory")
+	}
+
+	if _, err := os.Stat(opts.DscFile); err != nil {
+		return fmt.Errorf("dsc file not found: %s", opts.DscFile)
+	}
+
+	outputDir := filepath.Join("packages", fmt.Sprintf("%s-%s", opts.Distribution, opts.Architecture))
+	if err := os.MkdirAll(outputDir, 0755); err != nil {
+		return fmt.Errorf("failed to create output directory: %w", err)
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("failed to get home directory: %w", err)
+	}
+
+	baseFileName := fmt.Sprintf("%s-%s.tgz", opts.Distribution, opts.Architecture)
+	basePath := filepath.Join(home, "pbuilder", baseFileName)
+
+	args := []string{
+		"pbuilder", "build",
+		"--basetgz", basePath,
+		"--buildresult", outputDir,
+		opts.DscFile,
+	}
+
+	fmt.Printf("Executing: sudo %s\n", strings.Join(args, " "))
+
+	cmd := exec.Command("sudo", args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Dir = "."
+
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to run pbuilder build: %w", err)
+	}
+
+	return nil
+}
+
+func (b *Builder) validatePackageOptions(opts *PackageOptions) error {
+	valid := false
+	for _, env := range b.config.Environments {
+		if env.Distribution == opts.Distribution && env.Architecture == opts.Architecture {
+			valid = true
+			break
+		}
+	}
+	if !valid {
+		return fmt.Errorf("invalid distribution and architecture combination: %s-%s", opts.Distribution, opts.Architecture)
 	}
 	return nil
 }
