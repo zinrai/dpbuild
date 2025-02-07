@@ -26,6 +26,11 @@ func main() {
 			fmt.Printf("Error during package build: %v\n", err)
 			os.Exit(1)
 		}
+	case "update":
+		if err := runUpdate(); err != nil {
+			fmt.Printf("Error during update: %v\n", err)
+			os.Exit(1)
+		}
 	default:
 		fmt.Printf("Unknown command: %s\n", os.Args[1])
 		os.Exit(1)
@@ -72,6 +77,20 @@ func runPackage() error {
 		DscFile:      *dsc,
 	}); err != nil {
 		return fmt.Errorf("failed to build package: %w", err)
+	}
+
+	return nil
+}
+
+func runUpdate() error {
+	cfg, err := config.Load()
+	if err != nil {
+		return fmt.Errorf("failed to load config: %w", err)
+	}
+
+	b := builder.New(cfg)
+	if err := b.Update(); err != nil {
+		return fmt.Errorf("failed to update: %w", err)
 	}
 
 	return nil

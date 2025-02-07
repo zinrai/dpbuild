@@ -149,3 +149,45 @@ func (b *Builder) validatePackageOptions(opts *PackageOptions) error {
 	}
 	return nil
 }
+
+func (b *Builder) Update() error {
+	if err := b.checkPbuilder(); err != nil {
+		return err
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("failed to get home directory: %w", err)
+	}
+
+	for _, env := range b.config.Environments {
+		baseFileName := fmt.Sprintf("%s-%s.tgz", env.Distribution, env.Architecture)
+		basePath := filepath.Join(home, "pbuilder", baseFileName)
+
+		if _, err := os.Stat(basePath); err != nil {
+			fmt.Printf("Base image not found for %s (%s), skipping...\n", env.Distribution, env.Architecture)
+			continue
+		}
+
+		fmt.Printf("Updating environment for %s (%s)...\n", env.Distribution, env.Architecture)
+
+		args := []string{
+			"pbuilder", "update",
+			"--basetgz", basePath,
+		}
+
+		fmt.Printf("Executing: sudo %s\n", strings.Join(args, " "))
+
+		cmd := exec.Command("sudo", args...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to run pbuilder update for %s: %w", env.Distribution, err)
+		}
+
+		fmt.Printf("Successfully updated environment for %s (%s)\n", env.Distribution, env.Architecture)
+	}
+
+	return nil
+}
