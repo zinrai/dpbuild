@@ -26,7 +26,7 @@ func main() {
 			fmt.Printf("Error during source package creation: %v\n", err)
 			os.Exit(1)
 		}
-	case "pkg":
+	case "package":
 		if err := runPackage(); err != nil {
 			fmt.Printf("Error during package build: %v\n", err)
 			os.Exit(1)

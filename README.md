@@ -101,7 +101,7 @@ This command:
 Build a Debian package using pbuilder:
 
 ```bash
-$ dpbuild pkg --dist bookworm --arch amd64 --dsc ../package_1.0-1.dsc
+$ dpbuild package --dist bookworm --arch amd64 --dsc ../package_1.0-1.dsc
 ```
 
 The built packages will be stored in `packages/${distribution}-${architecture}/`.
