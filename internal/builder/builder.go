@@ -102,7 +102,7 @@ func (b *Builder) Package(opts *PackageOptions) error {
 		return fmt.Errorf("dsc file not found: %s", opts.DscFile)
 	}
 
-	outputDir := filepath.Join("packages", fmt.Sprintf("%s-%s", opts.Distribution, opts.Architecture))
+	outputDir := filepath.Join(".packages", fmt.Sprintf("%s-%s", opts.Distribution, opts.Architecture))
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
 		return fmt.Errorf("failed to create output directory: %w", err)
 	}
