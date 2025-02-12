@@ -1,6 +1,6 @@
 # dpbuild
 
-dpbuild is a CLI tool for building Debian packages using pbuilder as the backend.
+dpbuild is a CLI tool for building Debian packages using [pbuilder](https://pbuilder-team.pages.debian.net/pbuilder/) as the backend.
 
 ## Features
 
