@@ -65,7 +65,7 @@ $ cd example
 Initialize build environments
 
 ```bash
-$ sudo docker run --privileged \
+$ sudo docker run --rm --privileged \
   -v ~/.dpbuild:/root/.dpbuild \
   ghcr.io/zinrai/dpbuild init
 ```
@@ -73,7 +73,7 @@ $ sudo docker run --privileged \
 Create source package
 
 ```bash
-$ sudo docker run --privileged \
+$ sudo docker run --rm --privileged \
   -v $(pwd):/work \
   -w /work/hello \
   ghcr.io/zinrai/dpbuild source
@@ -82,11 +82,19 @@ $ sudo docker run --privileged \
 Build package
 
 ```bash
-$ sudo docker run --privileged \
+$ sudo docker run --rm --privileged \
   -v ~/.dpbuild:/root/.dpbuild \
   -v $(pwd):/work \
   -w /work/hello \
   ghcr.io/zinrai/dpbuild package -dist bookworm -arch amd64 -dsc ../hello_1.0.0-1.dsc
+```
+
+Update build environments
+
+```
+$ sudo docker run --rm --privileged \
+  -v ~/.dpbuild:/root/.dpbuild \
+  ghcr.io/zinrai/dpbuild update
 ```
 
 ## Configuration
@@ -119,14 +127,6 @@ Create pbuilder base tarballs for all environments in config.yaml:
 $ dpbuild init
 ```
 
-### Update build environments
-
-Update pbuilder base tarballs for all environments in config.yaml:
-
-```bash
-$ dpbuild update
-```
-
 ### Create source package
 
 Run in a directory containing the `debian` directory:
@@ -148,6 +148,14 @@ $ dpbuild package -dist bookworm -arch amd64 -dsc ../package_1.0-1.dsc
 ```
 
 The built packages will be stored in `.packages/${distribution}-${architecture}/`.
+
+### Update build environments
+
+Update pbuilder base tarballs for all environments in config.yaml:
+
+```bash
+$ dpbuild update
+```
 
 ## License
 
