@@ -4,9 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-
-	"github.com/zinrai/dpbuild/internal/builder"
-	"github.com/zinrai/dpbuild/internal/config"
 )
 
 func main() {
@@ -43,12 +40,12 @@ func main() {
 }
 
 func runInit() error {
-	cfg, err := config.Load()
+	cfg, err := Load()
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
 
-	b := builder.New(cfg)
+	b := NewBuilder(cfg)
 	if err := b.Init(); err != nil {
 		return fmt.Errorf("failed to initialize: %w", err)
 	}
@@ -57,12 +54,12 @@ func runInit() error {
 }
 
 func runSource() error {
-	cfg, err := config.Load()
+	cfg, err := Load()
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
 
-	b := builder.New(cfg)
+	b := NewBuilder(cfg)
 	if err := b.Source(); err != nil {
 		return fmt.Errorf("failed to create source package: %w", err)
 	}
@@ -84,13 +81,13 @@ func runPackage() error {
 		return fmt.Errorf("--dist, --arch, and --dsc flags are required")
 	}
 
-	cfg, err := config.Load()
+	cfg, err := Load()
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
 
-	b := builder.New(cfg)
-	if err := b.Package(&builder.PackageOptions{
+	b := NewBuilder(cfg)
+	if err := b.Package(&PackageOptions{
 		Distribution: *dist,
 		Architecture: *arch,
 		DscFile:      *dsc,
@@ -102,12 +99,12 @@ func runPackage() error {
 }
 
 func runUpdate() error {
-	cfg, err := config.Load()
+	cfg, err := Load()
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
 
-	b := builder.New(cfg)
+	b := NewBuilder(cfg)
 	if err := b.Update(); err != nil {
 		return fmt.Errorf("failed to update: %w", err)
 	}

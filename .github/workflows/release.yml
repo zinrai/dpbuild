@@ -22,7 +22,7 @@ jobs:
 
       - name: Build binary
         run: |
-          go build -o dpbuild-linux-amd64 cmd/dpbuild/main.go
+          go build -o dpbuild-linux-amd64
 
       - name: Create Release
         id: create_release

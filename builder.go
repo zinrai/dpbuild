@@ -1,4 +1,4 @@
-package builder
+package main
 
 import (
 	"fmt"
@@ -6,15 +6,13 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-
-	"github.com/zinrai/dpbuild/internal/config"
 )
 
 type Builder struct {
-	config *config.Config
+	config *Config
 }
 
-func New(cfg *config.Config) *Builder {
+func NewBuilder(cfg *Config) *Builder {
 	return &Builder{
 		config: cfg,
 	}
