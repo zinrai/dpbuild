@@ -43,7 +43,50 @@ $ go install github.com/zinrai/dpbuild/cmd/dpbuild@latest
 ### Build from source
 
 ```bash
-$ go build -o dpbuild cmd/dpbuild/main.go
+$ go build
+```
+
+## Docker
+
+A Docker image is available on GHCR. This eliminates the need to install pbuilder and other dependencies on your host system.
+
+```bash
+$ docker pull ghcr.io/zinrai/dpbuild:latest
+```
+
+### Example with Docker
+
+The `example/hello` directory contains a sample Go application for testing.
+
+```bash
+$ cd example
+```
+
+Initialize build environments
+
+```bash
+$ sudo docker run --privileged \
+  -v ~/.dpbuild:/root/.dpbuild \
+  ghcr.io/zinrai/dpbuild init
+```
+
+Create source package
+
+```bash
+$ sudo docker run --privileged \
+  -v $(pwd):/work \
+  -w /work/hello \
+  ghcr.io/zinrai/dpbuild source
+```
+
+Build package
+
+```bash
+$ sudo docker run --privileged \
+  -v ~/.dpbuild:/root/.dpbuild \
+  -v $(pwd):/work \
+  -w /work/hello \
+  ghcr.io/zinrai/dpbuild package -dist bookworm -arch amd64 -dsc ../hello_1.0.0-1.dsc
 ```
 
 ## Configuration
