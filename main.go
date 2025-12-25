@@ -54,12 +54,7 @@ func runInit() error {
 }
 
 func runSource() error {
-	cfg, err := Load()
-	if err != nil {
-		return fmt.Errorf("failed to load config: %w", err)
-	}
-
-	b := NewBuilder(cfg)
+	b := &Builder{}
 	if err := b.Source(); err != nil {
 		return fmt.Errorf("failed to create source package: %w", err)
 	}
