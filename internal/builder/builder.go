@@ -20,13 +20,20 @@ func New(cfg *config.Config) *Builder {
 	}
 }
 
-func (b *Builder) Init() error {
+func (b *Builder) pbuilderDir() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return fmt.Errorf("failed to get home directory: %w", err)
+		return "", fmt.Errorf("failed to get home directory: %w", err)
+	}
+	return filepath.Join(home, ".dpbuild", "pbuilder"), nil
+}
+
+func (b *Builder) Init() error {
+	pbuilderDir, err := b.pbuilderDir()
+	if err != nil {
+		return err
 	}
 
-	pbuilderDir := filepath.Join(home, "pbuilder")
 	if err := os.MkdirAll(pbuilderDir, 0755); err != nil {
 		return fmt.Errorf("failed to create pbuilder directory: %w", err)
 	}
@@ -107,13 +114,13 @@ func (b *Builder) Package(opts *PackageOptions) error {
 		return fmt.Errorf("failed to create output directory: %w", err)
 	}
 
-	home, err := os.UserHomeDir()
+	pbuilderDir, err := b.pbuilderDir()
 	if err != nil {
-		return fmt.Errorf("failed to get home directory: %w", err)
+		return err
 	}
 
 	baseFileName := fmt.Sprintf("%s-%s.tgz", opts.Distribution, opts.Architecture)
-	basePath := filepath.Join(home, "pbuilder", baseFileName)
+	basePath := filepath.Join(pbuilderDir, baseFileName)
 
 	args := []string{
 		"pbuilder", "build",
@@ -155,14 +162,14 @@ func (b *Builder) Update() error {
 		return err
 	}
 
-	home, err := os.UserHomeDir()
+	pbuilderDir, err := b.pbuilderDir()
 	if err != nil {
-		return fmt.Errorf("failed to get home directory: %w", err)
+		return err
 	}
 
 	for _, env := range b.config.Environments {
 		baseFileName := fmt.Sprintf("%s-%s.tgz", env.Distribution, env.Architecture)
-		basePath := filepath.Join(home, "pbuilder", baseFileName)
+		basePath := filepath.Join(pbuilderDir, baseFileName)
 
 		if _, err := os.Stat(basePath); err != nil {
 			fmt.Printf("Base image not found for %s (%s), skipping...\n", env.Distribution, env.Architecture)
