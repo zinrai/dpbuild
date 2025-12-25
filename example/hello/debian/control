@@ -1,0 +1,13 @@
+Source: hello
+Section: utils
+Priority: optional
+Maintainer: Example User <example@example.com>
+Build-Depends: debhelper-compat (= 13), golang-go
+Standards-Version: 4.6.0
+
+Package: hello
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Hello World example for dpbuild
+ A simple Hello World application written in Go.
+ This package is an example for testing dpbuild.
