@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+const version = "0.4.0"
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("usage: dpbuild <command> [<args>]")
@@ -33,6 +35,8 @@ func main() {
 			fmt.Printf("Error during update: %v\n", err)
 			os.Exit(1)
 		}
+	case "version":
+		fmt.Printf("dpbuild version %s\n", version)
 	default:
 		fmt.Printf("Unknown command: %s\n", os.Args[1])
 		os.Exit(1)
