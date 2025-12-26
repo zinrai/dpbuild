@@ -15,7 +15,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     debian-archive-keyring \
     sudo \
     && rm -rf /var/lib/apt/lists/*
-RUN echo 'BUILD_HOME="$BUILDDIR"' > /root/.pbuilderrc
+
+RUN cat <<EOF > /root/.pbuilderrc
+BUILD_HOME="\$BUILDDIR"
+APTCACHEHARDLINK=no
+EOF
 
 COPY --from=builder /build/dpbuild /usr/local/bin/dpbuild
 
