@@ -32,20 +32,6 @@ dpbuild is a CLI tool for building Debian packages using [pbuilder](https://pbui
 # apt install pbuilder dpkg-dev debian-keyring debian-archive-keyring sudo
 ```
 
-## Installation
-
-### Using go install
-
-```bash
-$ go install github.com/zinrai/dpbuild/cmd/dpbuild@latest
-```
-
-### Build from source
-
-```bash
-$ go build
-```
-
 ## Docker
 
 A Docker image is available on GHCR. This eliminates the need to install pbuilder and other dependencies on your host system.
